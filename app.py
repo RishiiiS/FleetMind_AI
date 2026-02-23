@@ -3,14 +3,12 @@ import pandas as pd
 import joblib
 import numpy as np
 
-# Page configuration
 st.set_page_config(
     page_title="FleetMind AI Dashboard",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom Styling to make it look premium
 st.markdown("""
 <style>
     .main-header {
@@ -82,32 +80,31 @@ with st.sidebar:
     st.markdown("- Manufacturing Year")
     st.markdown("- Last Service Date")
     st.markdown("- Warranty Expiry Date")
-    
-# Form Input for Vehicle Data
+
 st.markdown('<div class="card">', unsafe_allow_html=True)
 st.subheader("Enter Vehicle Details")
 
 with st.form("vehicle_form"):
     col1, col2, col3 = st.columns(3)
-    
+
     with col1:
         vehicle_model = st.selectbox("Vehicle Model", ["Sedan", "SUV", "Truck", "Van", "Bus"])
         fuel_type = st.selectbox("Fuel Type", ["Petrol", "Diesel", "Electric", "Hybrid"])
         transmission = st.selectbox("Transmission Type", ["Automatic", "Manual"])
         owner_type = st.selectbox("Owner Type", ["First", "Second", "Third", "Fourth & Above"])
-        
+
     with col2:
         mileage = st.number_input("Mileage (km)", min_value=0, value=50000, step=1000)
         vehicle_age = st.number_input("Vehicle Age (years)", min_value=0, value=5, step=1)
         engine_size = st.number_input("Engine Size (cc)", min_value=500, max_value=10000, value=1500, step=100)
         odometer = st.number_input("Odometer Reading (km)", min_value=0, value=55000, step=1000)
-        
+
     with col3:
         reported_issues = st.number_input("Reported Issues", min_value=0, value=1, step=1)
         insurance_premium = st.number_input("Insurance Premium ($)", min_value=0, value=500, step=50)
         accident_history = st.number_input("Accident History", min_value=0, value=0, step=1)
         fuel_efficiency = st.number_input("Fuel Efficiency (km/l)", min_value=0.0, value=15.0, step=0.5)
-        
+
     col4, col5 = st.columns(2)
     with col4:
         days_since_service = st.number_input("Days Since Last Service", min_value=0, value=90, step=1)
@@ -120,7 +117,6 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 if submitted:
     with st.spinner("Analyzing maintenance risks using AI..."):
-        # Create a dataframe from the form inputs
         input_data = pd.DataFrame([{
             "Vehicle_Model": vehicle_model,
             "Fuel_Type": fuel_type,
@@ -137,16 +133,14 @@ if submitted:
             "Days_Since_Last_Service": days_since_service,
             "Warranty_Days_Left": warranty_days_left
         }])
-        
+
         try:
-            # Making predictions
             prediction = model.predict(input_data)[0]
             predict_proba = model.predict_proba(input_data)[0][1] if hasattr(model, "predict_proba") else None
-            
-            # Update main dataframe with predictions
+
             st.markdown("---")
             st.markdown("## Prediction Results")
-            
+
             if prediction == 1:
                 st.error(f"**High Risk**: This vehicle requires maintenance!")
                 if predict_proba is not None:
@@ -155,63 +149,50 @@ if submitted:
                 st.success(f"**Healthy**: This vehicle does not require immediate maintenance.")
                 if predict_proba is not None:
                     st.markdown(f"**Risk Probability Code**: <span style='color:#22c55e; font-size:1.2rem; font-weight:bold;'>{predict_proba*100:.1f}%</span>", unsafe_allow_html=True)
-                
+
             st.markdown("### Input Summary")
             st.dataframe(input_data, use_container_width=True)
-            
-            # --- Key Contributing Factors ---
-            # Try to extract feature importances from the pipeline
+
             try:
                 classifier = model.named_steps['classifier']
                 preprocessor = model.named_steps['preprocessor']
-                
+
                 if hasattr(classifier, 'feature_importances_'):
                     importances = classifier.feature_importances_
-                    
-                    # Get feature names from preprocessor
+
                     cat_features = preprocessor.named_transformers_['cat'].get_feature_names_out()
                     num_features = input_data.select_dtypes(exclude="object").columns
                     feature_names = np.concatenate([cat_features, num_features])
-                    
-                    # Transform input data
+
                     X_transformed = preprocessor.transform(input_data)
-                    
-                    # Calculate local contribution (Feature Value * Importance)
-                    # Note: Since Random Forests are non-linear, this is a coarse approximation 
-                    # for "local" importance. A better approach is SHAP, but this is a lightweight alternative.
-                    # We will show the absolute global importances that are active for this instance.
+
                     active_importances = X_transformed[0] * importances
-                    
-                    # Normalize to percentages
+
                     if np.sum(np.abs(active_importances)) > 0:
                         normalized_importances = np.abs(active_importances) / np.sum(np.abs(active_importances)) * 100
                     else:
                         normalized_importances = np.abs(active_importances)
-                    
-                    # Create a dataframe of the top factors
+
                     importance_df = pd.DataFrame({
                         'Feature': feature_names,
                         'Contribution (%)': normalized_importances
                     })
-                    
-                    # Clean up feature names (e.g., Vehicle_Model_Sedan -> Vehicle Model (Sedan))
+
                     def clean_feature_name(name):
                         if '_' in name and sum([1 for c in name if c == '_']) >= 2:
                             parts = name.split('_')
                             return f"{parts[0]} {parts[1]} ({parts[-1]})"
                         return name.replace('_', ' ').title()
-                        
+
                     importance_df['Feature'] = importance_df['Feature'].apply(clean_feature_name)
-                    
-                    # Sort and get top 3
+
                     top_factors = importance_df.sort_values(by='Contribution (%)', ascending=False).head(3)
-                    
+
                     st.markdown("### Top Contributing Factors")
-                    
-                    # Display as metrics
+
                     f1, f2, f3 = st.columns(3)
                     factors = top_factors.to_dict('records')
-                    
+
                     if len(factors) > 0:
                         f1.metric("1. " + factors[0]['Feature'], f"{factors[0]['Contribution (%)']:.1f}% impact")
                     if len(factors) > 1:
@@ -219,9 +200,8 @@ if submitted:
                     if len(factors) > 2:
                         f3.metric("3. " + factors[2]['Feature'], f"{factors[2]['Contribution (%)']:.1f}% impact")
             except Exception as e:
-                # Silently fail if we can't extract feature importances
                 pass
-            
+
         except Exception as e:
             st.error(f"Error during prediction: {str(e)}")
             st.info("The model encountered an issue processing the input data.")
