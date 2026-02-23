@@ -187,3 +187,7 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 print("Accuracy:", accuracy_score(y_test, pred))
 print(classification_report(y_test, pred))
 print(confusion_matrix(y_test, pred))
+
+import joblib
+joblib.dump(model, 'fleetmind_model.pkl')
+print("Model saved as fleetmind_model.pkl")
