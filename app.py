@@ -187,7 +187,7 @@ st.markdown(f"""
         color: black !important;
     }}
 
-    /* Force sharp corners on ALL inputs */
+    /* Force sharp corners and readability on ALL inputs */
     input, select, div[data-baseweb="select"], div[data-baseweb="input"] {{
         border-radius: 0px !important;
         border: 2px solid black !important;
@@ -199,28 +199,124 @@ st.markdown(f"""
     /* Target internal elements for rounded corners */
     div[data-baseweb="select"] > div, div[data-baseweb="input"] > div {{
         border-radius: 0px !important;
+        background-color: white !important;
+        color: black !important;
+    }}
+
+    /* Selectbox selected value text */
+    div[data-baseweb="select"] span,
+    div[data-baseweb="select"] div[class*="value"],
+    div[data-baseweb="select"] div,
+    .stSelectbox div[data-baseweb="select"] * {{
+        color: black !important;
+        background-color: white !important;
+    }}
+
+    /* Selectbox dropdown arrow */
+    div[data-baseweb="select"] svg {{
+        fill: black !important;
+        color: black !important;
+    }}
+
+    /* Dropdown menu / popover - aggressive dark mode override */
+    div[data-baseweb="popover"],
+    div[data-baseweb="popover"] > div,
+    div[data-baseweb="menu"],
+    div[data-baseweb="menu"] > div,
+    div[data-baseweb="list"],
+    div[data-baseweb="list"] > div,
+    ul[role="listbox"],
+    ul[role="listbox"] li,
+    ul[role="listbox"] li *,
+    [data-baseweb="menu"] li,
+    [data-baseweb="menu"] li *,
+    div[data-baseweb="popover"] ul,
+    div[data-baseweb="popover"] li {{
+        background-color: white !important;
+        color: black !important;
+        border-radius: 0px !important;
+    }}
+
+    /* Dropdown option hover & selected */
+    ul[role="listbox"] li:hover,
+    ul[role="listbox"] li[aria-selected="true"],
+    [data-baseweb="menu"] li:hover,
+    [data-baseweb="menu"] li:focus,
+    li[data-highlighted="true"],
+    li[aria-selected="true"] {{
+        background-color: #e0e0e0 !important;
+        color: black !important;
+    }}
+
+    /* Force all option text */
+    [data-baseweb="menu"] li span,
+    [data-baseweb="menu"] li div,
+    [data-baseweb="menu"] li p {{
+        color: black !important;
+    }}
+
+    /* Number input internal */
+    .stNumberInput input,
+    .stNumberInput div[data-baseweb="input"] input {{
+        background-color: white !important;
+        color: black !important;
+    }}
+
+    /* Widget labels in dark mode */
+    .stSelectbox label,
+    .stNumberInput label,
+    .stSelectbox label p,
+    .stNumberInput label p {{
+        color: black !important;
     }}
 
     /* Button Styling */
-    .stButton>button {{
+    .stButton>button,
+    .stFormSubmitButton>button {{
         width: 100%;
         border-radius: 0 !important;
-        background: black !important;
-        color: white !important;
+        background: white !important;
+        background-color: white !important;
+        color: black !important;
         font-weight: 900 !important;
         text-transform: uppercase !important;
         padding: 1rem !important;
-        border: 2px solid black !important;
+        border: 3px solid black !important;
         transition: all 0.1s ease !important;
         font-size: 1.2rem !important;
         margin-top: 1rem;
     }}
 
-    .stButton>button:hover {{
-        background: white !important;
+    .stButton>button *,
+    .stFormSubmitButton>button *,
+    .stButton>button p,
+    .stFormSubmitButton>button p,
+    .stButton>button span,
+    .stFormSubmitButton>button span {{
         color: black !important;
+    }}
+
+    .stButton>button:hover,
+    .stFormSubmitButton>button:hover {{
+        background: black !important;
+        background-color: black !important;
+        color: white !important;
         transform: translate(-4px, -4px);
         box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+    }}
+
+    .stButton>button:hover *,
+    .stFormSubmitButton>button:hover *,
+    .stButton>button:hover p,
+    .stFormSubmitButton>button:hover p {{
+        color: white !important;
+    }}
+
+    .stFormSubmitButton>button:focus,
+    .stFormSubmitButton>button:active {{
+        background: white !important;
+        color: black !important;
+        outline: none !important;
     }}
 
     /* Results section */
