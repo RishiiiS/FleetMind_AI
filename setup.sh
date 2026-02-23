@@ -7,8 +7,8 @@ echo "    FleetMind AI - Setup & Execution      "
 echo "=========================================="
 
 echo -e "\n[1/4] Creating an isolated Python virtual environment..."
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 
 echo -e "\n[2/4] Installing required Python packages..."
 pip install --upgrade pip
