@@ -101,8 +101,53 @@ st.markdown(f"""
     .agency-header {{
         padding: 6rem 2rem;
         border-bottom: 3px solid var(--border-color);
-        background: white;
+        background: #000000;
         text-align: center;
+        position: relative;
+        overflow: hidden;
+    }}
+
+    .agency-header::before {{
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image:
+            repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 20px,
+                rgba(255,255,255,0.03) 20px,
+                rgba(255,255,255,0.03) 22px
+            );
+        pointer-events: none;
+    }}
+
+    .agency-header::after {{
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+        background-size: 24px 24px;
+        pointer-events: none;
+    }}
+
+    .hero-subtitle {{
+        font-weight: 900;
+        font-size: 1.5rem;
+        letter-spacing: 0.2rem;
+        margin-top: -1rem;
+        color: white !important;
+        background: transparent;
+        display: inline-block;
+        padding: 0.6rem 1.5rem;
+        border: 2px solid white;
+        position: relative;
+        z-index: 1;
+    }}
+
+    .hero-subtitle:hover {{
+        background: white;
+        color: black !important;
     }}
 
     .logo-img {{
@@ -218,11 +263,10 @@ st.markdown('<div class="marquee"> PREDICTIVE MAINTENANCE • FLEET ANALYSIS •
 st.markdown(f"""
 <div class="brutalist-container">
     <div class="agency-header">
-        <img src="data:image/png;base64,{logo_base64}" class="logo-img">
-        <div style="font-weight:900; font-size: 1.5rem; letter-spacing: 0.2rem; margin-top: -1rem;">FOR_DIGITAL_INSIDERS_&_FLEET_MANAGERS_</div>
+        <div class="hero-subtitle">FOR_DIGITAL_INSIDERS_&_FLEET_MANAGERS_</div>
     </div>
     <div class="grid-row">
-        <div class="grid-cell" style="background: black; color: white;">
+        <div class="grid-cell" style="background: white; color: black;">
             <h3>ABOUT US_</h3>
             <p>We are the vanguard of algorithmic vehicle health. FleetMind AI leverages deep learning to anticipate mechanical failure before it occurs.</p>
         </div>
