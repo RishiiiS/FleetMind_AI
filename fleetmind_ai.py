@@ -68,7 +68,7 @@ preprocessor = ColumnTransformer(
 # Create full pipeline
 model = Pipeline(steps=[
     ("preprocessor", preprocessor),
-    ("classifier", DecisionTreeClassifier(max_depth=10,random_state=42))
+    ("classifier",DecisionTreeClassifier(max_depth=10, random_state=42, class_weight="balanced"))
 ])
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -88,4 +88,102 @@ print("Accuracy:", accuracy_score(y_test, pred))
 print("\nClassification Report:\n")
 print(classification_report(y_test, pred))
 print("\nConfusion Matrix:\n")
+print(confusion_matrix(y_test, pred))
+
+# ---- STEP 1: Remove leakage columns BEFORE pipeline ----
+
+leakage_cols = [
+    "Tire_Condition",
+    "Brake_Condition",
+    "Battery_Status",
+    "Service_History",
+    "Maintenance_History"
+]
+
+X = df.drop("Need_Maintenance", axis=1)
+X = X.drop(columns=leakage_cols)
+y = df["Need_Maintenance"]
+
+print("New feature count:", X.shape)
+
+# ---- STEP 2: Identify new categorical + numeric columns ----
+
+categorical_cols = X.select_dtypes(include="object").columns
+numeric_cols = X.select_dtypes(exclude="object").columns
+
+print("Categorical Columns:", categorical_cols)
+print("Numeric Columns:", numeric_cols)
+
+# ---- STEP 3: Create new preprocessor ----
+
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols)
+    ],
+    remainder="passthrough"
+)
+
+# ---- STEP 4: Create new model pipeline ----
+
+model = Pipeline(steps=[
+    ("preprocessor", preprocessor),
+    ("classifier", DecisionTreeClassifier(max_depth=10, random_state=42))
+])
+
+# ---- STEP 5: Split data ----
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42
+)
+
+print(X_train.shape)
+print(X_test.shape)
+
+# ---- STEP 6: Train ----
+
+model.fit(X_train, y_train)
+
+# ---- STEP 7: Evaluate ----
+
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+pred = model.predict(X_test)
+
+print("Accuracy:", accuracy_score(y_test, pred))
+print("\nClassification Report:\n")
+print(classification_report(y_test, pred))
+print("\nConfusion Matrix:\n")
+print(confusion_matrix(y_test, pred))
+
+model.fit(X_train, y_train)
+
+pred = model.predict(X_test)
+
+print("Accuracy:", accuracy_score(y_test, pred))
+print(classification_report(y_test, pred))
+print(confusion_matrix(y_test, pred))
+
+from sklearn.ensemble import RandomForestClassifier
+
+model = Pipeline(steps=[
+    ("preprocessor", preprocessor),
+    ("classifier", RandomForestClassifier(
+        n_estimators=200,
+        random_state=42,
+        class_weight="balanced"
+    ))
+])
+
+model.fit(X_train, y_train)
+
+pred = model.predict(X_test)
+
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+print("Accuracy:", accuracy_score(y_test, pred))
+print(classification_report(y_test, pred))
 print(confusion_matrix(y_test, pred))
