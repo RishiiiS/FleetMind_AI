@@ -11,44 +11,84 @@ st.set_page_config(
 
 st.markdown("""
 <style>
+    /* Global Font & Variable Setup */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    :root {
+        --primary: #6366f1;
+        --primary-hover: #4f46e5;
+        --bg-card: rgba(30, 41, 59, 0.7);
+        --border-color: rgba(255, 255, 255, 0.1);
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+    }
+
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Modern Gradient Header */
     .main-header {
-        font-size: 3rem;
-        font-weight: 700;
-        background: -webkit-linear-gradient(45deg, #FF6B6B, #4ECDC4);
+        font-size: 3.5rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 0px;
+        margin-bottom: 0.5rem;
     }
+
     .sub-header {
-        font-size: 1.2rem;
-        color: #A0AEC0;
-        margin-bottom: 2rem;
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
     }
+
+    /* Glassmorphic Card */
     .card {
-        padding: 1.5rem;
-        border-radius: 12px;
-        background-color: #1E293B;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        margin-bottom: 1rem;
-        border: 1px solid #334155;
+        padding: 2rem;
+        border-radius: 16px;
+        background-color: var(--bg-card);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease, border-color 0.2s ease;
+        margin-bottom: 1.5rem;
     }
+
+    .card:hover {
+        border-color: rgba(99, 102, 241, 0.4);
+        transform: translateY(-2px);
+    }
+
+    /* Professional Button Styling */
     .stButton>button {
         width: 100%;
-        border-radius: 8px;
-        background: linear-gradient(90deg, #4F46E5 0%, #7C3AED 100%);
+        border-radius: 10px;
+        background: var(--primary);
         color: white;
         font-weight: 600;
         border: none;
-        padding: 0.5rem 1rem;
-        transition: all 0.3s ease;
+        padding: 0.6rem 1rem;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(255,255,255,0.1);
     }
+
     .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+        background: var(--primary-hover);
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        border-color: rgba(255,255,255,0.2);
     }
-    /* Hide index in dataframes */
-    .row_heading.level0 {display:none}
-    .blank {display:none}
+
+    .stButton>button:active {
+        transform: scale(0.98);
+    }
+
+    /* Hide Dataframe Index - Updated for newer Streamlit */
+    [data-testid="stElementToolbar"] {
+        display: none;
+    }
 </style>
 """, unsafe_allow_html=True)
 

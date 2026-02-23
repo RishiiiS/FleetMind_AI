@@ -32,15 +32,12 @@ df.isnull().sum()
 
 df["Need_Maintenance"].value_counts()
 
-# Convert to datetime
 df["Last_Service_Date"] = pd.to_datetime(df["Last_Service_Date"])
 df["Warranty_Expiry_Date"] = pd.to_datetime(df["Warranty_Expiry_Date"])
 
-# useful numeric features
 df["Days_Since_Last_Service"] = (pd.Timestamp.today() - df["Last_Service_Date"]).dt.days
 df["Warranty_Days_Left"] = (df["Warranty_Expiry_Date"] - pd.Timestamp.today()).dt.days
 
-# Drop original date columns
 df.drop(["Last_Service_Date", "Warranty_Expiry_Date"], axis=1, inplace=True)
 
 X = df.drop("Need_Maintenance", axis=1)
@@ -57,7 +54,6 @@ print(categorical_cols)
 print("\nNumeric Columns:")
 print(numeric_cols)
 
-# Create preprocessor
 preprocessor = ColumnTransformer(
     transformers=[
         ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols)
@@ -65,7 +61,6 @@ preprocessor = ColumnTransformer(
     remainder="passthrough"
 )
 
-# Create full pipeline
 model = Pipeline(steps=[
     ("preprocessor", preprocessor),
     ("classifier",DecisionTreeClassifier(max_depth=10, random_state=42, class_weight="balanced"))
@@ -90,7 +85,6 @@ print(classification_report(y_test, pred))
 print("\nConfusion Matrix:\n")
 print(confusion_matrix(y_test, pred))
 
-# ---- STEP 1: Remove leakage columns BEFORE pipeline ----
 
 leakage_cols = [
     "Tire_Condition",
@@ -106,15 +100,11 @@ y = df["Need_Maintenance"]
 
 print("New feature count:", X.shape)
 
-# ---- STEP 2: Identify new categorical + numeric columns ----
-
 categorical_cols = X.select_dtypes(include="object").columns
 numeric_cols = X.select_dtypes(exclude="object").columns
 
 print("Categorical Columns:", categorical_cols)
 print("Numeric Columns:", numeric_cols)
-
-# ---- STEP 3: Create new preprocessor ----
 
 preprocessor = ColumnTransformer(
     transformers=[
@@ -123,14 +113,10 @@ preprocessor = ColumnTransformer(
     remainder="passthrough"
 )
 
-# ---- STEP 4: Create new model pipeline ----
-
 model = Pipeline(steps=[
     ("preprocessor", preprocessor),
     ("classifier", DecisionTreeClassifier(max_depth=10, random_state=42))
 ])
-
-# ---- STEP 5: Split data ----
 
 from sklearn.model_selection import train_test_split
 
@@ -143,11 +129,9 @@ X_train, X_test, y_train, y_test = train_test_split(
 print(X_train.shape)
 print(X_test.shape)
 
-# ---- STEP 6: Train ----
 
 model.fit(X_train, y_train)
 
-# ---- STEP 7: Evaluate ----
 
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
